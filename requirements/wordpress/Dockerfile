@@ -1,10 +1,27 @@
-FROM debian:latest
+FROM debian:buster
 
-RUN apt update && apt upgrade -y && apt install -y php-fpm php-mysqli curl
+WORKDIR /var/www/html
 
-COPY www.conf /etc/php/8.2/fpm/pool.d/.
-COPY script.sh .
+# Install necessary packages
+RUN apt-get update && apt-get install -y \
+    php7.3-fpm \
+    php7.3-mysql \
+    curl && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN chmod +x script.sh
+# Install WP-CLI
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
+    chmod +x wp-cli.phar && \
+    mv wp-cli.phar /usr/local/bin/wp
 
-CMD ["./script.sh"]
+# Create the necessary directory for PHP-FPM
+RUN mkdir -p /var/run/php
+
+COPY www.conf /etc/php/7.3/fpm/pool.d/
+COPY script.sh /tmp/
+RUN chmod +x /tmp/script.sh 
+
+ENTRYPOINT ["/tmp/script.sh"]
+
+# Run PHP-FPM in the foreground
+CMD ["php-fpm7.3", "-F"]

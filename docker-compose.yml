@@ -32,11 +32,6 @@ services:
     build: requirements/mariadb/.
     container_name: mariadb
     restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: wordpress
-      MYSQL_USER: wpuser
-      MYSQL_PASSWORD: password
     volumes:
       - ./data:/var/lib/mysql
     env_file:

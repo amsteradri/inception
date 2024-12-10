@@ -1,18 +1,16 @@
-FROM debian:latest
 
-# Actualizar e instalar MariaDB
-RUN apt update && apt upgrade -y && apt install -y mariadb-server
+FROM debian:bullseye
 
-# Copiar archivos de configuración y script
-COPY 50-server.cnf /etc/mysql/mariadb.conf.d/
-COPY init.sql /etc/mysql/init.sql
-COPY script.sh ./
+RUN apt-get update \
+    && apt-get install -y mariadb-server \
+    mariadb-client
 
-# Crear directorio para el socket y ajustar permisos
-RUN mkdir /run/mysqld && \
-    chown -R mysql:mysql /run/mysqld && \
-    chmod 644 /etc/mysql/mariadb.conf.d/50-server.cnf && \
-    chmod +x script.sh
+COPY ./conf/50-server.cnf /etc/mysql/mariadb.conf.d/
+RUN chmod 644 /etc/mysql/mariadb.conf.d/50-server.cnf
 
-# Definir el comando para ejecutar el script de inicialización
-CMD ["./script.sh"]
+COPY ./tools/script.sh /
+RUN chmod +x script.sh
+
+EXPOSE 3306
+
+CMD ["/script.sh"]

@@ -17,8 +17,8 @@ RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli
 # Create the necessary directory for PHP-FPM
 RUN mkdir -p /var/run/php
 
-COPY www.conf /etc/php/7.3/fpm/pool.d/
-COPY script.sh /tmp/
+COPY conf/www.conf /etc/php/7.3/fpm/pool.d/
+COPY tools/script.sh /tmp/
 RUN chmod +x /tmp/script.sh 
 
 ENTRYPOINT ["/tmp/script.sh"]
